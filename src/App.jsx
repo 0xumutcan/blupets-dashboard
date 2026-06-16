@@ -135,7 +135,7 @@ export default function App() {
                   <div className="tree-title">
                     <span className="tree-dot" style={{ background: tree.family.hex }} />
                     <h2>{tree.family.t4}</h2>
-                    <span className="muted">{tree.family.name} ailesi · {tree.family.pair.join(' + ')}</span>
+                    <span className="muted">{tree.family.name} family · {tree.family.pair.join(' + ')}</span>
                   </div>
                   <FamilyTree tree={tree} />
                 </>
