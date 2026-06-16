@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/api/blukit/:path*", "destination": "https://blupix.app/api/blukit/:path*" }
+  ]
+}
