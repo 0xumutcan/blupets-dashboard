@@ -10,8 +10,9 @@
 const OS = 'https://api.opensea.io/api/v2'
 const SLUG = 'blupets'
 
-// Free-tier "instant" key (auto-refreshed on 401). Override with OPENSEA_KEY env.
-let osKey = process.env.OPENSEA_KEY || '78c27ff7227e3c52e4138903426627e2'
+// OpenSea key. Optional: if empty, the first request auto-mints a free-tier key
+// (single-flight, see mintKey). Set OPENSEA_KEY env for a stable/full key.
+let osKey = process.env.OPENSEA_KEY || ''
 
 // Base color names indexed by color id (0..7).
 const COLOR_NAMES = ['Red', 'Yellow', 'Green', 'Cyan', 'Blue', 'Purple', 'Black', 'White']
@@ -37,6 +38,7 @@ function mintKey() {
 }
 
 async function osFetch(path) {
+  if (!osKey) await mintKey() // no key yet — mint one (single-flight)
   const call = () => fetch(`${OS}${path}`, { headers: { 'X-API-KEY': osKey, accept: 'application/json' } })
   let res = await call()
   if (res.status === 401) {
