@@ -12,15 +12,19 @@ export function Summary({ summary, inv, address, prices }) {
   const { stageTotals, colorTotals } = summary
   const maxColor = Math.max(1, ...colorTotals.map((c) => c.count))
 
-  // Wallet value: unrevealed (T0) at unrevealed floor, Origin tokens at origin
-  // floor, all other revealed tokens at collection floor.
+  // Wallet value, tier-weighted off the collection (base) floor:
+  //   T1 = 1x, T2 = 2x, T3 = 4x, T4 = 8x floor (each tier is worth that many
+  //   base tokens). T0 at unrevealed floor, Origin tokens at origin floor.
   const floors = prices?.floors
-  const origin = inv.special.length // Stage=Origin (out-of-family genesis tokens)
+  const F = floors?.collection
   const value =
-    floors && floors.collection != null && floors.unrevealed != null && floors.origin != null
-      ? (inv.total - inv.t0 - origin) * floors.collection +
-        inv.t0 * floors.unrevealed +
-        origin * floors.origin
+    floors && F != null && floors.unrevealed != null && floors.origin != null
+      ? stageTotals.t1 * F +
+        stageTotals.t2 * 2 * F +
+        stageTotals.t3 * 4 * F +
+        stageTotals.t4 * 8 * F +
+        stageTotals.t0 * floors.unrevealed +
+        stageTotals.special * floors.origin
       : null
   const usd = prices?.ethUsd
 
@@ -32,7 +36,7 @@ export function Summary({ summary, inv, address, prices }) {
         </div>
         {value != null && (
           <div className="wallet-value">
-            <div className="muted small">Portfolio value (live floor)</div>
+            <div className="muted small">Approx. portfolio value</div>
             <div className="wallet-value-eth">{value.toFixed(value < 10 ? 3 : 2)} Ξ</div>
             {usd ? <div className="wallet-value-usd">≈ ${Math.round(value * usd).toLocaleString('en-US')}</div> : null}
           </div>
